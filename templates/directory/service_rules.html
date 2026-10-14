@@ -1,0 +1,42 @@
+{% extends "app_base.html" %}
+{% block title %}Queue rules · {{ service.name }}{% endblock %}
+{% block app %}
+<div class="app-head">
+  <div>
+    <p class="eyebrow">{{ service.branch.name }}</p>
+    <h1>Queue rules · {{ service.name }}</h1>
+    <p class="muted">Operational policy for this service's queue.</p>
+  </div>
+  <a class="btn btn-sm btn-ghost" href="{% url 'directory:services' current_organization.slug %}">Back</a>
+</div>
+
+<div class="card" style="max-width:680px;">
+  <form method="post" class="stack">
+    {% csrf_token %}
+    <div class="form-grid">
+      <div class="field">
+        <label for="{{ form.max_wait_minutes.id_for_label }}">Maximum expected wait (minutes)</label>
+        {{ form.max_wait_minutes }}
+        {% for error in form.max_wait_minutes.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="{{ form.auto_miss_after_minutes.id_for_label }}">Grace period after calling (minutes)</label>
+        {{ form.auto_miss_after_minutes }}
+        {% for error in form.auto_miss_after_minutes.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+      </div>
+    </div>
+    <div class="field">
+      <label for="{{ form.notification_channels.id_for_label }}">Notification channels</label>
+      {{ form.notification_channels }}
+      <span class="help">Comma separated, e.g. <span class="mono">inapp,email</span>.</span>
+      {% for error in form.notification_channels.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+    </div>
+    <label class="checks">{{ form.priority_enabled }} <span>Allow priority tickets</span></label>
+    <label class="checks">{{ form.reopen_after_missed }} <span>Return missed customers to the waiting list</span></label>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Save rules</button>
+      <a class="btn btn-ghost" href="{% url 'directory:services' current_organization.slug %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

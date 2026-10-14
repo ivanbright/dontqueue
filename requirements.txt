@@ -1,0 +1,11 @@
+# Don't Queue — Python dependencies
+
+# Core
+Django==6.1.2
+
+# PostgreSQL driver. Only required when POSTGRES_DB is set; SQLite (the local
+# default) works without it.
+psycopg[binary]>=3.2
+
+# File exports (Excel / Word / PDF). A custom package published on PyPI.
+exportkit[all]>=0.1.0

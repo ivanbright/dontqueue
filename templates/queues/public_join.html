@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Join {{ organization.name }} · {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container container-narrow">
+    {% include "partials/messages.html" %}
+    <div class="card card-lg">
+      <p class="eyebrow-pill">{{ organization.name }}</p>
+      <h1 style="margin:16px 0 8px;">Join the queue</h1>
+      <p class="muted" style="margin-bottom:22px;">
+        We'll give you a ticket number and keep your place in line. You can wait anywhere.
+      </p>
+
+      {% if services %}
+      <form method="post" class="stack">
+        {% csrf_token %}
+        <input type="hidden" name="submission_id" value="{{ submission_id }}">
+        <div class="field">
+          <label for="service_id">Service</label>
+          <select class="select" name="service_id" id="service_id" required>
+            {% for service in services %}
+              <option value="{{ service.id }}">{{ service.name }} — {{ service.branch.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="{{ form.full_name.id_for_label }}">Your name</label>
+          {{ form.full_name }}
+          {% for error in form.full_name.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+        </div>
+        <div class="field">
+          <label for="{{ form.phone.id_for_label }}">Mobile (optional)</label>
+          {{ form.phone }}
+          <span class="help">Used only to reach you about this visit.</span>
+        </div>
+        <div class="field">
+          <label for="{{ form.email.id_for_label }}">Email (optional)</label>
+          {{ form.email }}
+        </div>
+        <button class="btn btn-primary btn-block" type="submit">Join queue</button>
+      </form>
+      {% else %}
+        <div class="empty">This organization isn't accepting remote customers right now.</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

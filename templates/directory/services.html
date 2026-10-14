@@ -1,0 +1,66 @@
+{% extends "app_base.html" %}
+{% block title %}Services · {{ current_organization.name }}{% endblock %}
+{% block app %}
+<div class="app-head">
+  <div>
+    <p class="eyebrow">Operate</p>
+    <h1>Services &amp; queues</h1>
+    <p class="muted">Each service has a live queue you can operate.</p>
+  </div>
+  {% if is_admin %}
+    <a class="btn btn-sm btn-primary" href="{% url 'directory:service_create' current_organization.slug %}">New service</a>
+  {% endif %}
+</div>
+
+{% if services %}
+  {% regroup services by branch as branch_groups %}
+  {% for group in branch_groups %}
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-head">
+      <div>
+        <div class="card-title">{{ group.grouper.name }}</div>
+        <span class="muted small mono">{{ group.grouper.code }}</span>
+      </div>
+      {% if is_admin %}
+        <a class="btn btn-sm btn-ghost" href="{% url 'directory:service_create_for_branch' current_organization.slug group.grouper.id %}">New service</a>
+      {% endif %}
+    </div>
+    <div class="card-flat" style="padding:0; overflow:hidden;">
+      <table class="table">
+        <thead><tr><th>Service</th><th>Avg</th><th>Remote</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for service in group.list %}
+          <tr>
+            <td><span class="strong">{{ service.name }}</span><br><span class="muted tiny mono">{{ service.code }}</span></td>
+            <td class="num">{{ service.avg_service_minutes }} min</td>
+            <td>{% if service.allow_remote_join %}<span class="badge">Yes</span>{% else %}<span class="muted">No</span>{% endif %}</td>
+            <td>{% if service.is_active %}<span class="status status-open">Active</span>{% else %}<span class="status status-closed">Inactive</span>{% endif %}</td>
+            <td class="cluster">
+              {% with queue=service.default_queue %}
+                {% if queue %}<a class="btn btn-sm btn-primary" href="{% url 'queues:console' current_organization.slug queue.id %}">Console</a>{% endif %}
+              {% endwith %}
+              {% if is_admin %}
+                <a class="btn btn-sm btn-ghost" href="{% url 'directory:service_edit' current_organization.slug service.id %}">Edit</a>
+                <a class="btn btn-sm btn-ghost" href="{% url 'directory:service_rules' current_organization.slug service.id %}">Rules</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="empty">
+    <p class="empty-title">No services yet</p>
+    <p class="muted">A service turns into a live queue customers can join.</p>
+    {% if is_admin %}
+      <div class="cluster" style="justify-content:center; margin-top:14px;">
+        <a class="btn btn-primary" href="{% url 'directory:service_create' current_organization.slug %}">New service</a>
+        <a class="btn btn-ghost" href="{% url 'directory:branch_create' current_organization.slug %}">New branch</a>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

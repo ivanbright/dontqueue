@@ -1,0 +1,83 @@
+{% extends "app_base.html" %}
+{% block title %}{{ current_organization.name }} · {{ PLATFORM_NAME }}{% endblock %}
+{% block app %}
+<div class="app-head">
+  <div>
+    <p class="eyebrow">Overview</p>
+    <h1>{{ current_organization.name }}</h1>
+  </div>
+  <div class="cluster">
+    {% if can_operate %}
+      <a class="btn btn-sm btn-ghost" href="{% url 'exports:org_export' current_organization.slug 'tickets' 'xlsx' %}">Export .xlsx</a>
+      <a class="btn btn-sm btn-ghost" href="{% url 'exports:org_export' current_organization.slug 'tickets' 'pdf' %}">.pdf</a>
+    {% endif %}
+    {% if is_admin %}
+      <a class="btn btn-sm btn-ghost" href="{% url 'directory:branch_create' current_organization.slug %}">New branch</a>
+      <a class="btn btn-sm btn-primary" href="{% url 'directory:service_create' current_organization.slug %}">New service</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid grid-4" style="margin-bottom:24px;">
+  <div class="stat"><svg class="stat-ico" aria-hidden="true"><use href="#i-branches"/></svg><div class="label">Branches</div><div class="value">{{ branches|length }}</div></div>
+  <div class="stat"><svg class="stat-ico" aria-hidden="true"><use href="#i-services"/></svg><div class="label">Services</div><div class="value">{{ service_count }}</div></div>
+  <div class="stat"><svg class="stat-ico" aria-hidden="true"><use href="#i-overview"/></svg><div class="label">Queues</div><div class="value">{{ queue_cards|length }}</div></div>
+  <div class="stat"><svg class="stat-ico" aria-hidden="true"><use href="#i-audit"/></svg><div class="label">Active tickets</div><div class="value">{{ recent_entries|length }}</div></div>
+</div>
+
+<h2 style="margin-bottom:14px;">Live queues</h2>
+{% if queue_cards %}
+<div class="grid grid-3">
+  {% for card in queue_cards %}
+  <article class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-title">{{ card.queue.service.name }}</div>
+        <p class="muted small">{{ card.queue.branch.name }} · {{ card.queue.name }}</p>
+      </div>
+      <span class="status status-{{ card.queue.status }}">{{ card.queue.get_status_display }}</span>
+    </div>
+    <div class="cluster" style="gap:18px;">
+      <div><div class="ticket-label">Waiting</div><div class="strong">{{ card.snapshot.waiting }}</div></div>
+      <div><div class="ticket-label">In service</div><div class="strong">{{ card.snapshot.in_service }}</div></div>
+      <div><div class="ticket-label">Served</div><div class="strong">{{ card.snapshot.served }}</div></div>
+    </div>
+    <hr class="divider">
+    <a class="btn btn-sm btn-primary" href="{% url 'queues:console' current_organization.slug card.queue.id %}">Open console</a>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty">
+  <p class="empty-title">No queues yet</p>
+  <p class="muted">Create a branch, then add a service — every service gets a live queue.</p>
+  {% if is_admin %}
+    <div class="cluster" style="justify-content:center; margin-top:14px;">
+      <a class="btn btn-primary" href="{% url 'directory:service_create' current_organization.slug %}">New service</a>
+      <a class="btn btn-ghost" href="{% url 'directory:branch_create' current_organization.slug %}">New branch</a>
+    </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<h2 style="margin:28px 0 14px;">Active tickets</h2>
+{% if recent_entries %}
+<div class="card card-flat" style="padding:0; overflow:hidden;">
+  <table class="table">
+    <thead><tr><th>Ticket</th><th>Service</th><th>Status</th><th>Joined</th></tr></thead>
+    <tbody>
+      {% for entry in recent_entries %}
+      <tr>
+        <td class="num">#{{ entry.number }}</td>
+        <td>{{ entry.queue.service.name }}</td>
+        <td><span class="status status-{{ entry.status }}">{{ entry.get_status_display }}</span></td>
+        <td class="muted small">{{ entry.joined_at|date:"M j, H:i" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty">No active tickets right now.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,37 @@
+{% load static dq %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ PLATFORM_NAME }}{% endblock %}</title>
+  <link rel="stylesheet" href="{% asset 'css/theme.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+{% block body %}
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="{% url 'core:landing' %}"><span class="dot" aria-hidden="true"></span>{{ PLATFORM_NAME }}</a>
+      <nav class="nav">
+        <a href="{% url 'core:explore' %}">Find a queue</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'core:dashboard' %}">Dashboard</a>
+          {% if user.is_platform_admin %}<a href="{% url 'core:platform' %}">Platform</a>{% endif %}
+          <a href="{% url 'accounts:profile' %}">Profile</a>
+          <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-ghost">Sign out</button>
+          </form>
+        {% else %}
+          <a href="{% url 'accounts:login' %}">Sign in</a>
+          <a class="btn btn-sm btn-primary" href="{% url 'accounts:signup' %}">Get started</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+{% endblock %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

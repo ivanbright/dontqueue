@@ -1,0 +1,191 @@
+{% extends "app_base.html" %}
+{% load dq %}
+{% block title %}{{ service.name }} console · {{ current_organization.name }}{% endblock %}
+{% block app %}
+<div class="app-head">
+  <div>
+    <p class="eyebrow">{{ service.branch.name }} · {{ queue.name }}</p>
+    <h1>{{ service.name }}</h1>
+    <p class="muted">
+      <span class="status status-{{ queue.status }}">{{ queue.get_status_display }}</span>
+      <span class="muted small"> · numbered up to #{{ queue.next_number|add:"-1" }}</span>
+    </p>
+  </div>
+  <div class="cluster">
+    {% if can_operate %}
+      <form method="post" action="{% url 'queues:call_next' current_organization.slug queue.id %}">
+        {% csrf_token %}
+        <button class="btn btn-accent" type="submit">Call next</button>
+      </form>
+      <a class="btn btn-ghost btn-sm" href="{% url 'queues:register' current_organization.slug service.id %}">Register walk-in</a>
+      {% if queue.status == 'open' %}
+        <form method="post" action="{% url 'queues:queue_action' current_organization.slug queue.id 'pause' %}">
+          {% csrf_token %}<button class="btn btn-ghost btn-sm" type="submit">Pause</button>
+        </form>
+      {% else %}
+        <form method="post" action="{% url 'queues:queue_action' current_organization.slug queue.id 'resume' %}">
+          {% csrf_token %}<button class="btn btn-ghost btn-sm" type="submit">Reopen</button>
+        </form>
+      {% endif %}
+      <form method="post" action="{% url 'queues:queue_action' current_organization.slug queue.id 'close' %}">
+        {% csrf_token %}<button class="btn btn-ghost btn-sm" type="submit">Close</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+{% if called %}
+<div class="callout lime" style="margin-bottom:22px;">
+  <div class="cluster between">
+    <div>
+      <div class="ticket-label">Now serving</div>
+      <div class="ticket">#{{ called.number }}</div>
+      <p class="strong">{{ called.customer.full_name|default:"Walk-in customer" }}</p>
+      <p class="muted small">Called {{ called.called_at|timesince }} ago · {{ called.get_presence_display }}</p>
+    </div>
+    {% if can_operate %}
+    <div class="cluster">
+      <form method="post" action="{% url 'queues:entry_action' current_organization.slug called.id 'start' %}">
+        {% csrf_token %}<button class="btn btn-primary" type="submit">Start service</button>
+      </form>
+      <form method="post" action="{% url 'queues:entry_action' current_organization.slug called.id 'miss' %}">
+        {% csrf_token %}<button class="btn btn-ghost btn-sm" type="submit">Mark missed</button>
+      </form>
+      <form method="post" action="{% url 'queues:entry_action' current_organization.slug called.id 'cancel' %}">
+        {% csrf_token %}<button class="btn btn-danger btn-sm" type="submit">Cancel</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% else %}
+<div class="callout" style="margin-bottom:22px;">Nobody is being served right now.</div>
+{% endif %}
+
+<div class="grid grid-4" style="margin-bottom:24px;">
+  <div class="stat"><div class="label">Waiting</div><div class="value">{{ snapshot.waiting }}</div></div>
+  <div class="stat"><div class="label">In service</div><div class="value">{{ snapshot.in_service }}</div></div>
+  <div class="stat"><div class="label">Served today</div><div class="value">{{ snapshot.served }}</div></div>
+  <div class="stat"><div class="label">Longest wait</div><div class="value">{{ snapshot.longest_wait_seconds|duration_label }}</div></div>
+</div>
+
+<div class="grid" style="grid-template-columns: minmax(0,1.6fr) minmax(0,1fr); align-items:start;">
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">Waiting list</div>
+      <div class="cluster">
+        <span class="badge">{{ waiting|length }}</span>
+        {% if can_operate %}
+          <a class="small" href="{% url 'queues:console_export' current_organization.slug queue.id 'xlsx' %}">Excel</a>
+          <a class="small" href="{% url 'queues:console_export' current_organization.slug queue.id 'docx' %}">Word</a>
+          <a class="small" href="{% url 'queues:console_export' current_organization.slug queue.id 'pdf' %}">PDF</a>
+        {% endif %}
+      </div>
+    </div>
+    {% if waiting %}
+    <table class="table">
+      <thead><tr><th>#</th><th>Customer</th><th>Waiting</th><th>Est.</th><th></th></tr></thead>
+      <tbody>
+        {% for entry in waiting %}
+        <tr>
+          <td class="num strong">#{{ entry.number }}</td>
+          <td>
+            {{ entry.customer.full_name|default:"—" }}
+            <div class="muted tiny">{{ entry.get_presence_display }}{% if entry.priority %} · priority{% endif %}</div>
+          </td>
+          <td class="muted small">{{ entry.joined_at|timesince }}</td>
+          <td class="small">{{ entry.estimate.approx_wait_seconds|wait_label }}<div class="muted tiny">{{ entry.estimate.source }}</div></td>
+          <td>
+            {% if can_operate %}
+            <div class="cluster">
+              <form method="post" action="{% url 'queues:entry_action' current_organization.slug entry.id 'cancel' %}">
+                {% csrf_token %}<button class="btn btn-sm btn-ghost" type="submit">Remove</button>
+              </form>
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="muted small">The waiting list is empty.</p>
+    {% endif %}
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="card-head"><div class="card-title">In service</div></div>
+      {% if in_service %}
+        <div class="stack stack-sm">
+        {% for entry in in_service %}
+          <div class="cluster between">
+            <div><span class="strong num">#{{ entry.number }}</span> <span class="muted small">{{ entry.customer.full_name|default:"Walk-in" }}</span></div>
+            {% if can_operate %}
+            <form method="post" action="{% url 'queues:entry_action' current_organization.slug entry.id 'complete' %}">
+              {% csrf_token %}<button class="btn btn-sm btn-primary" type="submit">Complete</button>
+            </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted small">No service in progress.</p>
+      {% endif %}
+    </div>
+
+    {% if missed %}
+    <div class="card">
+      <div class="card-head"><div class="card-title">Missed turns</div></div>
+      <div class="stack stack-sm">
+      {% for entry in missed %}
+        <div class="cluster between">
+          <div><span class="strong num">#{{ entry.number }}</span> <span class="muted small">{{ entry.customer.full_name|default:"Walk-in" }}</span></div>
+          {% if can_operate %}
+          <form method="post" action="{% url 'queues:entry_action' current_organization.slug entry.id 'reopen' %}">
+            {% csrf_token %}<button class="btn btn-sm btn-ghost" type="submit">Requeue</button>
+          </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Recent activity</div></div>
+      {% if events %}
+      <div class="stack stack-sm">
+        {% for event in events %}
+        <div class="small">
+          <span class="mono muted tiny">{{ event.created_at|date:"H:i" }}</span>
+          {{ event.get_event_type_display }}{% if event.entry %} · #{{ event.entry.number }}{% endif %}
+          {% if event.actor %}<span class="muted tiny">by {{ event.actor.short_name }}</span>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+        <p class="muted small">No activity yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if recent_served %}
+<h2 style="margin:28px 0 14px;">Recently served</h2>
+<div class="card card-flat" style="padding:0; overflow:hidden;">
+  <table class="table">
+    <thead><tr><th>#</th><th>Customer</th><th>Completed</th></tr></thead>
+    <tbody>
+      {% for entry in recent_served %}
+      <tr>
+        <td class="num">#{{ entry.number }}</td>
+        <td>{{ entry.customer.full_name|default:"—" }}</td>
+        <td class="muted small">{{ entry.completed_at|timesince }} ago</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

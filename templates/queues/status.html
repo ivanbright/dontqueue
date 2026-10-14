@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load dq %}
+{% block title %}Ticket #{{ entry.number }} · {{ organization.name }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container container-narrow">
+    <div class="card card-lg" style="text-align:center;">
+      <p class="eyebrow-pill">{{ organization.name }} · {{ service.name }}</p>
+      <div class="ticket-label" style="margin-top:22px;">Your ticket</div>
+      <div class="ticket">#{{ entry.number }}</div>
+
+      <p style="margin-top:18px;">
+        <span class="status status-{{ entry.status }}" data-field="status">{{ entry.get_status_display }}</span>
+      </p>
+
+      {% if estimate.available %}
+      <div class="grid grid-2" style="margin-top:26px; text-align:left;">
+        <div class="stat">
+          <div class="label">People ahead</div>
+          <div class="value" data-field="position">{% if position %}{{ position }}{% else %}—{% endif %}</div>
+        </div>
+        <div class="stat">
+          <div class="label">Estimated wait</div>
+          <div class="value" data-field="wait">{{ estimate.approx_wait_seconds|wait_label }}</div>
+        </div>
+      </div>
+      <p class="muted tiny" style="margin-top:12px;">
+        Estimates are approximate ({{ estimate.source }}) and update automatically.
+      </p>
+      {% else %}
+      <p class="muted" style="margin-top:24px;">
+        {% if entry.status == 'served' %}All done — thanks for visiting.
+        {% elif entry.status == 'cancelled' %}This ticket was cancelled.
+        {% elif entry.status == 'in_service' %}You're being served now.
+        {% elif entry.status == 'called' %}It's your turn — please proceed to the desk.
+        {% elif entry.status == 'missed_turn' %}This turn was marked missed. Please speak to reception.
+        {% else %}Waiting…{% endif %}
+      </p>
+      {% endif %}
+
+      <hr class="divider">
+      <p class="muted small">
+        Keep this page open; it refreshes every {{ poll_interval_seconds }} seconds.
+        Reference <span class="mono">{{ entry.reference }}</span>
+      </p>
+    </div>
+
+    {% if events %}
+    <div class="card" style="margin-top:18px;">
+      <div class="card-head"><div class="card-title">Progress</div></div>
+      <div class="stack stack-sm">
+        {% for event in events %}
+          <div class="small"><span class="mono muted tiny">{{ event.created_at|date:"H:i" }}</span> {{ event.get_event_type_display }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var url = "{% url 'public:status_json' organization.slug entry.reference %}";
+  var timer = null;
+  function fmt(seconds) {
+    if (seconds === null || seconds === undefined) return "—";
+    seconds = parseInt(seconds, 10);
+    if (seconds <= 0) return "now";
+    if (seconds < 90) return "~1 min";
+    var m = Math.round(seconds / 60);
+    if (m < 60) return "~" + m + " min";
+    return "~" + (m / 60).toFixed(1) + " h";
+  }
+  function setText(field, value) {
+    var el = document.querySelector('[data-field="' + field + '"]');
+    if (el) el.textContent = value;
+  }
+  async function tick() {
+    try {
+      var response = await fetch(url, { headers: { "Accept": "application/json" } });
+      if (!response.ok) return;
+      var data = await response.json();
+      setText("status", data.status_label);
+      setText("position", data.position ? data.position : "—");
+      setText("wait", fmt(data.approx_wait_seconds));
+      if (["served", "cancelled"].indexOf(data.status) !== -1 && timer) {
+        clearInterval(timer);
+      }
+    } catch (err) { /* keep polling silently */ }
+  }
+  timer = setInterval(tick, {{ poll_interval_seconds }} * 1000);
+  tick();
+})();
+</script>
+{% endblock %}

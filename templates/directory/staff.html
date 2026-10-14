@@ -1,0 +1,48 @@
+{% extends "app_base.html" %}
+{% block title %}Staff · {{ current_organization.name }}{% endblock %}
+{% block app %}
+<div class="app-head">
+  <div>
+    <p class="eyebrow">Operate</p>
+    <h1>Staff</h1>
+    <p class="muted">Assign members to branches and services so they can operate queues.</p>
+  </div>
+</div>
+
+<div class="grid grid-2" style="align-items:start;">
+  <div class="card">
+    <div class="card-head"><div class="card-title">New assignment</div></div>
+    <form method="post" class="stack">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <ul class="messages">{% for error in form.non_field_errors %}<li class="error">{{ error }}</li>{% endfor %}</ul>
+      {% endif %}
+      <div class="field"><label for="{{ form.membership.id_for_label }}">Member</label>{{ form.membership }}{% for e in form.membership.errors %}<span class="form-error">{{ e }}</span>{% endfor %}</div>
+      <div class="field"><label for="{{ form.branch.id_for_label }}">Branch</label>{{ form.branch }}{% for e in form.branch.errors %}<span class="form-error">{{ e }}</span>{% endfor %}</div>
+      <div class="field"><label for="{{ form.service.id_for_label }}">Service (optional)</label>{{ form.service }}<span class="help">Leave empty to cover every service in the branch.</span>{% for e in form.service.errors %}<span class="form-error">{{ e }}</span>{% endfor %}</div>
+      <label class="checks">{{ form.is_active }} <span>Active</span></label>
+      <button class="btn btn-primary" type="submit">Save assignment</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">Assignments</div></div>
+    {% if assignments %}
+    <table class="table">
+      <thead><tr><th>Member</th><th>Scope</th><th></th></tr></thead>
+      <tbody>
+        {% for assignment in assignments %}
+        <tr>
+          <td>{{ assignment.membership.user.email }}</td>
+          <td>{{ assignment.branch.name }}{% if assignment.service %} · {{ assignment.service.name }}{% else %} · all services{% endif %}</td>
+          <td>{% if assignment.is_active %}<span class="badge">Active</span>{% else %}<span class="badge">Inactive</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="muted small">No staff assignments yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

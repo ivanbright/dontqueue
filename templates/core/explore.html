@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Find a queue · {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <p class="eyebrow">Directory</p>
+    <h1>Find a queue</h1>
+    <p class="lede" style="margin-top:12px;">Search for an organization, branch or service and join remotely.</p>
+
+    <form method="get" class="cluster" style="margin:26px 0 30px; max-width:560px;">
+      <input class="input" type="search" name="q" value="{{ query }}" placeholder="Search organizations, branches or services" style="flex:1;">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+
+    {% if organizations %}
+      <div class="grid grid-3">
+        {% for organization in organizations %}
+          <div class="card" style="display:flex;flex-direction:column;gap:12px;">
+            <div>
+              <a class="strong" href="{% url 'public:join' organization.slug %}" style="border:none;font-family:var(--font-display);font-size:1.1rem;">{{ organization.name }}</a>
+              {% if organization.description %}<p class="muted small" style="margin-top:6px;">{{ organization.description }}</p>{% endif %}
+            </div>
+            <div class="cluster">
+              <span class="badge">{{ organization.branch_count }} branch{{ organization.branch_count|pluralize:"es" }}</span>
+              <span class="badge">{{ organization.service_count }} service{{ organization.service_count|pluralize }}</span>
+            </div>
+            <a class="btn btn-sm btn-primary" href="{% url 'public:join' organization.slug %}">Join queue</a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">
+        {% if query %}No organizations match &ldquo;{{ query }}&rdquo;.{% else %}No organizations are accepting customers yet.{% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

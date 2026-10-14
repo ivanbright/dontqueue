@@ -1,0 +1,54 @@
+{% extends "app_base.html" %}
+{% block title %}Audit log · {{ current_organization.name }}{% endblock %}
+{% block app %}
+<div class="app-head">
+  <div>
+    <p class="eyebrow">Compliance</p>
+    <h1>Audit log</h1>
+    <p class="muted">Append-only record of privileged actions in this organization.</p>
+  </div>
+  <div class="cluster">
+    <a class="btn btn-sm btn-ghost" href="{% url 'exports:org_export' current_organization.slug 'audit' 'xlsx' %}">Excel</a>
+    <a class="btn btn-sm btn-ghost" href="{% url 'exports:org_export' current_organization.slug 'audit' 'docx' %}">Word</a>
+    <a class="btn btn-sm btn-ghost" href="{% url 'exports:org_export' current_organization.slug 'audit' 'pdf' %}">PDF</a>
+  </div>
+</div>
+
+<div class="card card-flat" style="padding:0; overflow:hidden;">
+  <table class="table">
+    <thead>
+      <tr><th>When</th><th>Actor</th><th>Action</th><th>Target</th><th>Details</th></tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr>
+        <td class="muted small" style="white-space:nowrap;">{{ log.created_at|date:"Y-m-d H:i" }}</td>
+        <td>{% if log.actor %}{{ log.actor.email }}{% else %}<span class="muted">system</span>{% endif %}</td>
+        <td><span class="badge">{{ log.action }}</span></td>
+        <td class="small">
+          {{ log.target_type|default:"—" }}
+          {% if log.target_id %}<div class="mono muted tiny">{{ log.target_id }}</div>{% endif %}
+        </td>
+        <td class="small muted">{% if log.metadata %}<span class="mono">{{ log.metadata }}</span>{% else %}—{% endif %}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="muted">No audit records yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if is_paginated %}
+<div class="cluster between" style="margin-top:18px;">
+  <div class="muted small">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</div>
+  <div class="cluster">
+    {% if page_obj.has_previous %}
+      <a class="btn btn-sm btn-ghost" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+    {% if page_obj.has_next %}
+      <a class="btn btn-sm btn-ghost" href="?page={{ page_obj.next_page_number }}">Next</a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

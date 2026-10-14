@@ -1,0 +1,37 @@
+{% extends "app_base.html" %}
+{% block title %}Branches · {{ current_organization.name }}{% endblock %}
+{% block app %}
+<div class="app-head">
+  <div>
+    <p class="eyebrow">Configure</p>
+    <h1>Branches</h1>
+    <p class="muted">Physical locations that hold services and queues.</p>
+  </div>
+  {% if is_admin %}
+    <a class="btn btn-primary btn-sm" href="{% url 'directory:branch_create' current_organization.slug %}">New branch</a>
+  {% endif %}
+</div>
+
+{% if branches %}
+<div class="card card-flat" style="padding:0; overflow:hidden;">
+  <table class="table">
+    <thead><tr><th>Branch</th><th>Code</th><th>Services</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for branch in branches %}
+      <tr>
+        <td><span class="strong">{{ branch.name }}</span>{% if branch.address %}<br><span class="muted tiny">{{ branch.address }}</span>{% endif %}</td>
+        <td class="mono">{{ branch.code }}</td>
+        <td class="num">{{ branch.service_count }}</td>
+        <td>{% if branch.is_active %}<span class="status status-open">Active</span>{% else %}<span class="status status-closed">Inactive</span>{% endif %}</td>
+        <td class="cluster">
+          {% if is_admin %}<a class="btn btn-sm btn-ghost" href="{% url 'directory:branch_edit' current_organization.slug branch.id %}">Edit</a>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty">No branches yet.{% if is_admin %} Create your first branch to get started.{% endif %}</div>
+{% endif %}
+{% endblock %}

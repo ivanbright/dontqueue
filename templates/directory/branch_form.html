@@ -1,0 +1,52 @@
+{% extends "app_base.html" %}
+{% block title %}{{ heading }} · {{ current_organization.name }}{% endblock %}
+{% block app %}
+<div class="app-head">
+  <div>
+    <p class="eyebrow">Branches</p>
+    <h1>{{ heading }}</h1>
+  </div>
+  <a class="btn btn-sm btn-ghost" href="{% url 'directory:branches' current_organization.slug %}">Back</a>
+</div>
+
+<div class="card" style="max-width:640px;">
+  <form method="post" class="stack">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <ul class="messages">{% for error in form.non_field_errors %}<li class="error">{{ error }}</li>{% endfor %}</ul>
+    {% endif %}
+    <div class="form-grid">
+      <div class="field">
+        <label for="{{ form.name.id_for_label }}">Name</label>
+        {{ form.name }}
+        {% for error in form.name.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="{{ form.code.id_for_label }}">Code</label>
+        {{ form.code }}
+        <span class="help">Short unique code, e.g. <span class="mono">HQ</span>.</span>
+        {% for error in form.code.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+      </div>
+    </div>
+    <div class="field">
+      <label for="{{ form.address.id_for_label }}">Address</label>
+      {{ form.address }}
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label for="{{ form.phone.id_for_label }}">Phone</label>
+        {{ form.phone }}
+      </div>
+      <div class="field">
+        <label for="{{ form.timezone.id_for_label }}">Timezone</label>
+        {{ form.timezone }}
+      </div>
+    </div>
+    <label class="checks">{{ form.is_active }} <span>Active</span></label>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Save branch</button>
+      <a class="btn btn-ghost" href="{% url 'directory:branches' current_organization.slug %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

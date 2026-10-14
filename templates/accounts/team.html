@@ -1,0 +1,103 @@
+{% extends "app_base.html" %}
+{% block title %}Team · {{ current_organization.name }}{% endblock %}
+{% block app %}
+<div class="app-head">
+  <div>
+    <p class="eyebrow">Configure</p>
+    <h1>Team</h1>
+    <p class="muted">People with access to {{ current_organization.name }}.</p>
+  </div>
+</div>
+
+<div class="grid grid-2" style="align-items:start;">
+  <div class="card">
+    <div class="card-head"><div class="card-title">Invite a teammate</div></div>
+    <form method="post" class="stack">
+      {% csrf_token %}
+      <div class="field">
+        <label for="{{ invite_form.email.id_for_label }}">Email</label>
+        {{ invite_form.email }}
+        {% for error in invite_form.email.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="{{ invite_form.role.id_for_label }}">Role</label>
+        {{ invite_form.role }}
+      </div>
+      <div class="field">
+        <label for="{{ invite_form.branch.id_for_label }}">Branch scope (optional)</label>
+        {{ invite_form.branch }}
+      </div>
+      <button class="btn btn-primary" type="submit">Create invitation</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">Pending invitations</div></div>
+    {% if invitations %}
+      <div class="stack stack-sm">
+      {% for invite in invitations %}
+        <div class="cluster between" style="border-bottom:1px solid var(--border-soft); padding:8px 0;">
+          <div>
+            <div class="strong">{{ invite.email }}</div>
+            <div class="muted small">{{ invite.get_role_display }}{% if invite.is_expired %} · expired{% endif %}</div>
+          </div>
+          <a class="small" href="{% url 'accounts:accept_invite' invite.token %}">Invitation link</a>
+        </div>
+      {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted small">No pending invitations.</p>
+    {% endif %}
+  </div>
+</div>
+
+<h2 style="margin:28px 0 14px;">Members</h2>
+<div class="card card-flat" style="padding:0; overflow:hidden;">
+  <table class="table">
+    <thead><tr><th>Person</th><th>Role</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for membership in memberships %}
+      <tr>
+        <td>
+          <span class="strong">{{ membership.user.full_name|default:membership.user.email }}</span><br>
+          <span class="muted tiny">{{ membership.user.email }}</span>
+        </td>
+        <td>
+          {% if membership.role == 'owner' %}
+            <span class="badge">Owner</span>
+          {% else %}
+            <form method="post" action="{% url 'team:update_membership' current_organization.slug membership.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="role">
+              <select class="select" name="role" onchange="this.form.submit()" style="width:auto;">
+                <option value="admin" {% if membership.role == 'admin' %}selected{% endif %}>Administrator</option>
+                <option value="branch_manager" {% if membership.role == 'branch_manager' %}selected{% endif %}>Branch manager</option>
+                <option value="receptionist" {% if membership.role == 'receptionist' %}selected{% endif %}>Receptionist</option>
+                <option value="provider" {% if membership.role == 'provider' %}selected{% endif %}>Service provider</option>
+              </select>
+            </form>
+          {% endif %}
+        </td>
+        <td>
+          {% if membership.is_active %}<span class="status status-open">Active</span>{% else %}<span class="status status-closed">Inactive</span>{% endif %}
+        </td>
+        <td>
+          {% if membership.role != 'owner' %}
+          <form method="post" action="{% url 'team:update_membership' current_organization.slug membership.id %}">
+            {% csrf_token %}
+            {% if membership.is_active %}
+              <input type="hidden" name="action" value="deactivate">
+              <button class="btn btn-sm btn-ghost" type="submit">Deactivate</button>
+            {% else %}
+              <input type="hidden" name="action" value="activate">
+              <button class="btn btn-sm btn-ghost" type="submit">Activate</button>
+            {% endif %}
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

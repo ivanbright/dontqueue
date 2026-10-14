@@ -1,0 +1,460 @@
+{% extends "base.html" %}
+{% block title %}{{ PLATFORM_NAME }} — calm, transparent waiting{% endblock %}
+{% block content %}
+
+<!-- hero -->
+<section class="hero">
+  <div class="container">
+    <span class="eyebrow-pill">Multi-tenant queue management</span>
+    <h1 style="margin-top:22px; max-width:900px;">Know your place. Skip the wait.</h1>
+    <p class="lede" style="margin-top:20px;">
+      Stay on top of every ticket, customer and wait time in one clean view.
+      {{ PLATFORM_NAME }} gives organizations live queues, honest estimates and a complete audit trail.
+    </p>
+    <div class="cluster" style="margin-top:30px;">
+      <a class="btn btn-primary" href="{% url 'accounts:signup' %}">Create an organization</a>
+      <a class="btn btn-ghost" href="{% url 'core:explore' %}">Find a queue</a>
+    </div>
+
+    <div class="trusted">
+      <span class="eyebrow">Trusted by teams of every size</span>
+      {% for organization in organizations %}
+        <span class="chip">{{ organization.name }}</span>
+      {% empty %}
+        <span class="chip">Clinics</span>
+        <span class="chip">Salons</span>
+        <span class="chip">Banks</span>
+        <span class="chip">Service desks</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- case study / product statement -->
+<section class="section section-tight">
+  <div class="container container-tight">
+    <p class="eyebrow" style="margin-bottom:14px;">Latest case study</p>
+    <h3 style="font-family:var(--font-display); font-weight:600; font-size:clamp(1.3rem,2.2vw,1.7rem); line-height:1.3;">
+      {{ PLATFORM_NAME }} is a queue clarity platform for clinics, banks and service teams that helps
+      you see every waiting customer and act on what&rsquo;s next.
+    </h3>
+  </div>
+</section>
+
+<!-- feature trio -->
+<section class="section" id="features" style="background:var(--paper); border-top:1px solid var(--border-soft); border-bottom:1px solid var(--border-soft);">
+  <div class="container">
+    <div class="grid grid-3">
+      <article class="card">
+        <div class="card-visual tint-mist">
+          <div class="mini-stack">
+            <div class="mini"><span>You are #14</span><span class="tag">12 min</span></div>
+            <div class="mini"><span>Now serving #11</span><span class="tag">live</span></div>
+          </div>
+        </div>
+        <p class="eyebrow">Predict the wait</p>
+        <h3 style="margin-top:8px;">Live wait estimates</h3>
+        <p class="muted" style="margin-top:8px;">Honest, clearly-approximate wait times computed from real service history.</p>
+      </article>
+      <article class="card">
+        <div class="card-visual tint-lime">
+          <div class="big-figure">Next: #11</div>
+          <p class="small" style="margin-top:6px;">Priority-aware ordering, one tap away.</p>
+        </div>
+        <p class="eyebrow">Control the flow</p>
+        <h3 style="margin-top:8px;">Smart call ordering</h3>
+        <p class="muted" style="margin-top:8px;">Priority, presence and arrival time balanced automatically when you call the next customer.</p>
+      </article>
+      <article class="card">
+        <div class="card-visual tint-blue">
+          <div class="mini-stack">
+            <div class="mini"><span>Waiting</span><span class="tag">7</span></div>
+            <div class="mini"><span>In service</span><span class="tag">2</span></div>
+            <div class="mini"><span>Served today</span><span class="tag">48</span></div>
+          </div>
+        </div>
+        <p class="eyebrow">See what matters</p>
+        <h3 style="margin-top:8px;">Insights &amp; signals</h3>
+        <p class="muted" style="margin-top:8px;">A live snapshot of every branch and desk, without a single spreadsheet.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- six feature cards -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Tidy queuing, unlimited control</h2>
+    </div>
+    <div class="grid grid-3" style="gap:18px;">
+      <article class="card feature-card">
+        <p class="eyebrow">Sort</p>
+        <h4 style="font-family:var(--font-display); font-size:1.1rem; font-weight:600;">Smart Ticketing</h4>
+        <p class="muted small">One authoritative number for every customer, grouped into clear categories.</p>
+        <div class="card-visual tint-mist">
+          <div class="chip-row">
+            <span class="chip">Check-in</span>
+            <span class="chip">Consultation</span>
+            <span class="chip">Payments</span>
+            <span class="chip">Support</span>
+            <span class="chip">Requeue</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card feature-card">
+        <p class="eyebrow">Connect</p>
+        <h4 style="font-family:var(--font-display); font-size:1.1rem; font-weight:600;">Channel Sync</h4>
+        <p class="muted small">Join at the desk or from a phone &mdash; it all flows into one live queue.</p>
+        <div class="card-visual tint-blue">
+          <div class="mini"><span>Remote check-in</span><span class="tag">1 min ago</span></div>
+          <div class="mini" style="margin-top:6px;"><span>Ticket</span><span class="strong">+#015</span></div>
+        </div>
+      </article>
+
+      <article class="card feature-card">
+        <p class="eyebrow">Control</p>
+        <h4 style="font-family:var(--font-display); font-size:1.1rem; font-weight:600;">Daily Insights</h4>
+        <p class="muted small">A plain-English brief of your top queue changes, every morning.</p>
+        <div class="card-visual tint-purple">
+          <div class="big-figure">+15%</div>
+          <p class="small" style="margin-top:4px;">Tickets served today</p>
+        </div>
+      </article>
+
+      <article class="card feature-card">
+        <p class="eyebrow">Track</p>
+        <h4 style="font-family:var(--font-display); font-size:1.1rem; font-weight:600;">Ticket Status</h4>
+        <p class="muted small">Track waiting, called and served tickets in one clean view.</p>
+        <div class="card-visual tint-mist">
+          <div class="mini-stack">
+            <div class="mini"><span>#014 &middot; Walk-in</span><span class="badge">Served</span></div>
+            <div class="mini"><span>#015 &middot; Remote</span><span class="badge">Waiting</span></div>
+            <div class="mini"><span>#016 &middot; Present</span><span class="badge">Called</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card feature-card">
+        <p class="eyebrow">Plan</p>
+        <h4 style="font-family:var(--font-display); font-size:1.1rem; font-weight:600;">Upcoming Load</h4>
+        <p class="muted small">See the day&rsquo;s expected busy periods from recurring patterns.</p>
+        <div class="card-visual tint-tan">
+          <div class="mini-stack">
+            <div class="mini"><span>09:00 &ndash; 10:00</span><span class="tag">Busy</span></div>
+            <div class="mini"><span>12:00 &ndash; 13:00</span><span class="tag">Steady</span></div>
+            <div class="mini"><span>16:00 &ndash; 17:00</span><span class="tag">Peak</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card feature-card">
+        <p class="eyebrow">Protect</p>
+        <h4 style="font-family:var(--font-display); font-size:1.1rem; font-weight:600;">Missed-turn detection</h4>
+        <p class="muted small">Long waits and missed turns are caught early &mdash; before they become a problem.</p>
+        <div class="card-visual tint-peach">
+          <p class="strong small">Wait spike</p>
+          <p class="small" style="margin-top:6px;">Now: <span class="big-figure" style="font-size:1.3rem;">42 min</span></p>
+          <p class="muted tiny">Avg: 12 min</p>
+          <span class="btn btn-sm" style="margin-top:10px;">Mark as expected</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- built for clarity -->
+<section class="section" id="how" style="background:var(--paper); border-top:1px solid var(--border-soft); border-bottom:1px solid var(--border-soft);">
+  <div class="container">
+    <p class="eyebrow center">Built for clarity</p>
+    <h2 class="center" style="margin-top:12px;">Queue insight, finally simple.</h2>
+    <p class="muted center" style="max-width:620px; margin:16px auto 40px; font-size:1.05rem;">
+      Connect your lobby once and watch every queue update in real time. No clipboards, no shouting, no guesswork.
+    </p>
+    <div class="grid grid-3">
+      <div>
+        <h4 style="font-family:var(--font-display); font-weight:600;">Master your flow.</h4>
+      </div>
+      <div>
+        <p class="eyebrow">Visibility</p>
+        <p style="margin-top:8px;">See every branch, desk and ticket in one unified view.</p>
+      </div>
+      <div>
+        <p class="eyebrow">Forecasting</p>
+        <p style="margin-top:8px;">Know the wait before it happens and predict busy periods.</p>
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-top:26px;">
+      <div>
+        <p class="eyebrow">Automation</p>
+        <p style="margin-top:8px;">Calling, requeuing and notifications handled without manual work.</p>
+      </div>
+      <div>
+        <p class="eyebrow">Accountability</p>
+        <p style="margin-top:8px;">Every action is recorded in an append-only audit trail.</p>
+      </div>
+      <div>
+        <p class="eyebrow">Clarity</p>
+        <p style="margin-top:8px;">Customers always know exactly where they stand.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- pricing -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Pricing</p>
+      <h2 style="margin-top:12px;">Your queue assistant, starting free</h2>
+      <p>Simple plans for branches and teams. No contracts, no hidden fees. Upgrade, downgrade, or cancel anytime.</p>
+    </div>
+
+    <div class="center" style="margin-bottom:26px;">
+      <div class="toggle" role="tablist" aria-label="Billing cycle">
+        <button type="button" data-cycle="annual" class="active">Annual</button>
+        <button type="button" data-cycle="monthly">Monthly</button>
+      </div>
+    </div>
+
+    <div class="price-grid" id="priceGrid" data-cycle="annual">
+      <div class="price-card">
+        <p class="eyebrow">Don&rsquo;t Queue Free</p>
+        <div class="price">
+          <span class="amount-annual">$0</span><span class="amount-monthly">$0</span>
+          <small>/ location / mo</small>
+        </div>
+        <p class="muted small">Best for a single desk that wants clarity, speed and automation.</p>
+        <ul class="plan-list">
+          <li>Single location</li>
+          <li>Live queue &amp; ticket numbers</li>
+          <li>Walk-in registration</li>
+          <li>Basic wait estimates</li>
+          <li>Email notifications</li>
+        </ul>
+        <a class="btn btn-primary btn-block" href="{% url 'accounts:signup' %}">Try free for 14 days</a>
+      </div>
+
+      <div class="price-card featured">
+        <p class="eyebrow">Don&rsquo;t Queue Pro</p>
+        <div class="price">
+          <span class="amount-annual">$24</span><span class="amount-monthly">$29</span>
+          <small>/ location / mo</small>
+        </div>
+        <p class="muted small">Everything in Free, plus the tools growing teams rely on.</p>
+        <ul class="plan-list">
+          <li>Everything in Free</li>
+          <li>Multiple services per branch</li>
+          <li>Remote join &amp; public status page</li>
+          <li>Smart call ordering</li>
+          <li>Wait insights &amp; alerts</li>
+          <li>Up to 5 locations</li>
+        </ul>
+        <a class="btn btn-primary btn-block" href="{% url 'accounts:signup' %}">Get started</a>
+      </div>
+
+      <div class="price-card">
+        <p class="eyebrow">Don&rsquo;t Queue Premium</p>
+        <div class="price">
+          <span class="amount-annual">$65</span><span class="amount-monthly">$79</span>
+          <small>/ location / mo</small>
+        </div>
+        <p class="muted small">Everything in Pro, for organizations that run at scale.</p>
+        <ul class="plan-list">
+          <li>Everything in Pro</li>
+          <li>Advanced wait forecasting</li>
+          <li>Priority &amp; appointment rules</li>
+          <li>Audit log &amp; exports</li>
+          <li>API access</li>
+          <li>Dedicated onboarding</li>
+        </ul>
+        <a class="btn btn-primary btn-block" href="{% url 'accounts:signup' %}">Get started</a>
+      </div>
+    </div>
+
+    <div class="card card-flat" style="margin-top:22px; display:flex; gap:20px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+      <div>
+        <h4 style="font-family:var(--font-display); font-weight:600;">Get custom pricing</h4>
+        <p class="muted small" style="margin-top:6px; max-width:560px;">
+          If you manage many branches, high volumes, or need custom integrations, our team can tailor
+          {{ PLATFORM_NAME }} to your needs.
+        </p>
+      </div>
+      <a class="btn btn-ghost" href="{% url 'accounts:signup' %}">Contact sales</a>
+    </div>
+  </div>
+</section>
+
+<!-- testimonials -->
+<section class="section" style="background:var(--paper); border-top:1px solid var(--border-soft); border-bottom:1px solid var(--border-soft);">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Testimonials</p>
+      <h2 style="margin-top:12px;">Customer Spotlight</h2>
+    </div>
+    <div class="quotes">
+      <figure class="quote">
+        <blockquote>We replaced the clipboard at reception with {{ PLATFORM_NAME }} in the first week. Patients now see their place in line without anyone shouting names across the room.</blockquote>
+        <figcaption class="meta"><span class="strong">Atlas Clinic</span> &middot; Patients waiting / day 150&ndash;250 &middot; Wait estimates, check-in, remote join</figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>What used to be a noisy lobby is now one calm, honest view. It changed how confident the front desk feels at peak hours.</blockquote>
+        <figcaption class="meta"><span class="strong">Northway Salon</span> &middot; Appointments / week 300&ndash;450 &middot; Remote join, status page, notifications</figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>{{ PLATFORM_NAME }} helped us spot long waits early and act before they became a problem. The audit trail alone paid for itself in a single busy month.</blockquote>
+        <figcaption class="meta"><span class="strong">Brightline Bank</span> &middot; Customers / day 400&ndash;700 &middot; Wait monitoring, audit log, branch reporting</figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>Before this we were flying blind between walk-ins and bookings. Now we know exactly how long the wait is and what each decision does to it.</blockquote>
+        <figcaption class="meta"><span class="strong">Kinetic Agency</span> &middot; Tickets / week 90&ndash;160 &middot; Call ordering, wait control, clarity</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- faq -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">FAQ</p>
+      <h2 style="margin-top:12px;">We have the answers</h2>
+    </div>
+    <div class="faq">
+      <p class="faq-cat">General</p>
+      <details>
+        <summary>What makes {{ PLATFORM_NAME }} different from a normal ticketing tool?</summary>
+        <p>It&rsquo;s built for decisions, not just labels. Instead of only handing out numbers, it explains what&rsquo;s happening in your lobby &mdash; what changed, how long people are waiting, and what to review next.</p>
+      </details>
+      <details>
+        <summary>Who is {{ PLATFORM_NAME }} for?</summary>
+        <p>Clinics, banks, salons and service teams that want clear visibility into wait times, walk-ins and what&rsquo;s driving busy periods &mdash; especially when the front desk is shared.</p>
+      </details>
+      <details>
+        <summary>Does {{ PLATFORM_NAME }} replace my front desk?</summary>
+        <p>No. It complements your team by keeping the queue clean and current, so check-in is faster and customers stop asking &ldquo;how long&rdquo;.</p>
+      </details>
+
+      <p class="faq-cat">Wait estimates</p>
+      <details>
+        <summary>How are wait times calculated?</summary>
+        <p>Every estimate blends observed service history with the number of active providers, and is clearly labelled approximate so nobody is promised a false precision.</p>
+      </details>
+      <details>
+        <summary>What happens if a customer misses their turn?</summary>
+        <p>After a configurable grace period a turn is marked missed. Depending on your rules, the customer can be returned to the waiting list in one tap &mdash; and it&rsquo;s all recorded.</p>
+      </details>
+
+      <p class="faq-cat">Setup &amp; integrations</p>
+      <details>
+        <summary>How long does setup take?</summary>
+        <p>Create an organization, add a branch and a service, and you have a live queue in minutes. Customers can join from a link or at the desk immediately.</p>
+      </details>
+
+      <p class="faq-cat">Security and privacy</p>
+      <details>
+        <summary>Is my data isolated from other organizations?</summary>
+        <p>Yes. Every branch, service and customer belongs to a single organization, and access is enforced on the server for every request &mdash; never by hiding a button.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- blog teaser -->
+<section class="section" id="blog" style="background:var(--paper); border-top:1px solid var(--border-soft);">
+  <div class="container">
+    <div class="section-head">
+      <h2>Latest insights</h2>
+      <p>Learn how to manage queues, wait times and growth without guesswork.</p>
+    </div>
+    <div class="blog-grid">
+      <article class="card blog-card">
+        <p class="eyebrow">Wait times</p>
+        <h4 style="font-family:var(--font-display); font-size:1.05rem; font-weight:600;">Why &ldquo;how long is the wait?&rdquo; is the only question that matters</h4>
+        <p class="muted small">Read article</p>
+      </article>
+      <article class="card blog-card">
+        <p class="eyebrow">Operations</p>
+        <h4 style="font-family:var(--font-display); font-size:1.05rem; font-weight:600;">Walk-ins vs. appointments: one queue, two promises</h4>
+        <p class="muted small">Read article</p>
+      </article>
+      <article class="card blog-card">
+        <p class="eyebrow">Insights &amp; signals</p>
+        <h4 style="font-family:var(--font-display); font-size:1.05rem; font-weight:600;">A weekly &ldquo;what changed&rdquo; review for busy front desks</h4>
+        <p class="muted small">Read article</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- closing cta -->
+<section class="section">
+  <div class="container">
+    <div class="cta">
+      <h2>Ready to take control of your queue?</h2>
+      <p>{{ PLATFORM_NAME }} keeps your waiting room calm, your customers informed, and your team in control.</p>
+      <div class="cluster" style="justify-content:center;">
+        <a class="btn btn-accent" href="{% url 'accounts:signup' %}">Create an organization</a>
+        <a class="btn" href="{% url 'accounts:login' %}" style="background:transparent; color:#fff; border-color:rgba(255,255,255,.4);">Sign in</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- footer -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="cols">
+      <div>
+        <a class="brand" href="{% url 'core:landing' %}"><span class="dot" aria-hidden="true"></span>{{ PLATFORM_NAME }}</a>
+        <p class="muted small" style="margin-top:14px; max-width:340px;">
+          Calm, transparent waiting for clinics, banks and service teams.
+        </p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="{% url 'core:explore' %}">Explore queues</a>
+        <a href="{% url 'accounts:signup' %}">Get started</a>
+      </div>
+      <div>
+        <h4>Social</h4>
+        <a href="#">X / Twitter</a>
+        <a href="#">Facebook</a>
+        <a href="#">Instagram</a>
+        <a href="#">Discord</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="#">Terms of Use</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Cookie policy</a>
+      </div>
+    </div>
+    <div class="bottom">
+      <span>&copy; 2026 {{ PLATFORM_NAME }}. All rights reserved.</span>
+      <span><a href="#" style="display:inline; border:none;">Go to top</a></span>
+    </div>
+  </div>
+</footer>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var grid = document.getElementById("priceGrid");
+  if (!grid) return;
+  var buttons = Array.prototype.slice.call(document.querySelectorAll(".toggle button"));
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      grid.setAttribute("data-cycle", button.dataset.cycle);
+      buttons.forEach(function (other) {
+        other.classList.toggle("active", other === button);
+      });
+    });
+  });
+})();
+</script>
+{% endblock %}

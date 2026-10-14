@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Profile · {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container container-narrow">
+    {% include "partials/messages.html" %}
+    <div class="card card-lg">
+      <h1>Profile</h1>
+      <p class="muted" style="margin:8px 0 22px;">Signed in as <span class="strong">{{ user.email }}</span>.</p>
+      <form method="post" class="stack">
+        {% csrf_token %}
+        <div class="field">
+          <label for="{{ form.full_name.id_for_label }}">Full name</label>
+          {{ form.full_name }}
+        </div>
+        <div class="field">
+          <label for="{{ form.phone.id_for_label }}">Phone</label>
+          {{ form.phone }}
+        </div>
+        <button class="btn btn-primary" type="submit">Save changes</button>
+      </form>
+      <hr class="divider">
+      <p class="small muted">
+        Member of {{ user_memberships|length }} organization{{ user_memberships|length|pluralize }}.
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

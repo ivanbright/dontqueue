@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Set up your organization · {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container container-narrow">
+    {% include "partials/messages.html" %}
+    <div class="card card-lg">
+      <h1>Set up your organization</h1>
+      <p class="muted" style="margin:8px 0 22px;">
+        You'll be its owner, which lets you manage branches, services and teammates.
+      </p>
+      <form method="post" class="stack">
+        {% csrf_token %}
+        <div class="field">
+          <label for="{{ form.name.id_for_label }}">Organization name</label>
+          {{ form.name }}
+          {% for error in form.name.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+        </div>
+        <div class="field">
+          <label for="{{ form.description.id_for_label }}">Short description</label>
+          {{ form.description }}
+          <span class="help">Shown on your public join page.</span>
+          {% for error in form.description.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+        </div>
+        <div class="field">
+          <label for="{{ form.timezone.id_for_label }}">Timezone</label>
+          {{ form.timezone }}
+          {% for error in form.timezone.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+        </div>
+        <button class="btn btn-primary" type="submit">Create organization</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "app_base.html" %}
+{% load dq %}
+{% block title %}Register walk-in · {{ service.name }}{% endblock %}
+{% block app %}
+<div class="app-head">
+  <div>
+    <p class="eyebrow">{{ service.branch.name }}</p>
+    <h1>Register a walk-in</h1>
+    <p class="muted">Add a customer directly to the {{ service.name }} queue.</p>
+  </div>
+  <a class="btn btn-sm btn-ghost" href="{% url 'queues:console' current_organization.slug queue.id %}">Back to console</a>
+</div>
+
+<div class="card" style="max-width:560px;">
+  <form method="post" class="stack">
+    {% csrf_token %}
+    <div class="field">
+      <label for="{{ form.full_name.id_for_label }}">Customer name</label>
+      {{ form.full_name }}
+      {% for error in form.full_name.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label for="{{ form.phone.id_for_label }}">Phone</label>
+        {{ form.phone }}
+      </div>
+      <div class="field">
+        <label for="{{ form.email.id_for_label }}">Email</label>
+        {{ form.email }}
+      </div>
+    </div>
+    <div class="field">
+      <label for="{{ form.priority.id_for_label }}">Priority</label>
+      {{ form.priority }}
+      <span class="help">Only honoured when priority tickets are enabled for this service.</span>
+    </div>
+    <div class="field">
+      <label for="{{ form.note.id_for_label }}">Note</label>
+      {{ form.note }}
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Add to queue</button>
+      <a class="btn btn-ghost" href="{% url 'queues:console' current_organization.slug queue.id %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

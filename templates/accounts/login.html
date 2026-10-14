@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Sign in · {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container container-narrow">
+    {% include "partials/messages.html" %}
+    <div class="card card-lg">
+      <h1>Sign in</h1>
+      <p class="muted" style="margin:8px 0 22px;">Welcome back to {{ PLATFORM_NAME }}.</p>
+      {% if form.non_field_errors %}
+      <ul class="messages">{% for error in form.non_field_errors %}<li class="error">{{ error }}</li>{% endfor %}</ul>
+      {% endif %}
+      <form method="post" class="stack">
+        {% csrf_token %}
+        <div class="field">
+          <label for="{{ form.username.id_for_label }}">Email</label>
+          {{ form.username }}
+          {% for error in form.username.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+        </div>
+        <div class="field">
+          <label for="{{ form.password.id_for_label }}">Password</label>
+          {{ form.password }}
+          {% for error in form.password.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+        </div>
+        <div style="text-align:right;"><a class="small" href="{% url 'accounts:password_reset' %}">Forgot password?</a></div>
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+      <hr class="divider">
+      <p class="small muted">No account yet? <a href="{% url 'accounts:signup' %}">Create an organization</a>.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

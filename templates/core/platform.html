@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Platform · {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    {% include "partials/messages.html" %}
+    <div class="app-head">
+      <div>
+        <p class="eyebrow">Platform</p>
+        <h1>Organizations</h1>
+      </div>
+      <a class="btn btn-ghost" href="{% url 'admin:index' %}">Django admin</a>
+    </div>
+
+    {% if organizations %}
+    <div class="card card-flat" style="padding:0; overflow:hidden;">
+      <table class="table">
+        <thead>
+          <tr><th>Organization</th><th>Owner</th><th>Branches</th><th>Members</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+        {% for organization in organizations %}
+          <tr>
+            <td><span class="strong">{{ organization.name }}</span><br><span class="mono muted tiny">{{ organization.slug }}</span></td>
+            <td>{{ organization.owner }}</td>
+            <td class="num">{{ organization.branch_count }}</td>
+            <td class="num">{{ organization.member_count }}</td>
+            <td>{% if organization.is_active %}<span class="status status-open">Active</span>{% else %}<span class="status status-closed">Inactive</span>{% endif %}</td>
+            <td><a class="btn btn-sm btn-ghost" href="{% url 'org_dashboard' organization.slug %}">Open</a></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="empty">No organizations yet.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
